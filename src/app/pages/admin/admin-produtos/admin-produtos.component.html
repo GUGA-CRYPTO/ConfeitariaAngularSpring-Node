@@ -1,0 +1,66 @@
+<div class="admin-header">
+    <h1 class="admin-title">Gerenciar <em>Produtos</em></h1><button class="btn-primary"
+        (click)="abrirNovoProduto()">+ Novo Produto</button>
+</div>
+<div class="admin-table-wrap">
+    <table class="admin-table">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Produto</th>
+                <th>Preço</th>
+                <th>Categoria</th>
+                <th>Estoque</th>
+                <th>Ações</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let p of store.products">
+                <td>{{p.id}}</td>
+                <td style="display: flex; align-items: center; gap: 12px;">
+                    <img *ngIf="p['imagem']" [src]="obterUrlImagem(p['imagem'])" [alt]="p.name" style="width: 48px; height: 48px; object-fit: cover; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); border: 1px solid #eee;">
+                    <div *ngIf="!p['imagem']" style="width: 48px; height: 48px; border-radius: 8px; background: #f9f9f9; border: 1px solid #eee; display: flex; align-items: center; justify-content: center; font-size: 10px; color: #bbb;">Sem Img</div>
+                    <span style="font-weight: 500;">{{p.name}}</span>
+                </td>
+                <td style="color:var(--gold)">{{store.fmt(p.price)}}</td>
+                <td>{{store.categoryLabel(p.category)}}</td>
+                <td>{{p.estoque||0}}</td>
+                <td><button class="tbl-btn edit" (click)="editarProduto(p)">Editar</button><button
+                        class="tbl-btn del" (click)="excluirProduto(p.id)">Excluir</button></td>
+            </tr>
+        </tbody>
+    </table>
+    <div class="empty-state" *ngIf="!store.products.length"><span>✦</span>
+        <p>Nenhum produto cadastrado</p>
+    </div>
+</div>
+
+<div class="modal-overlay" [class.open]="mostrarFormularioProduto" (click)="mostrarFormularioProduto=false">
+    <div class="modal modal-lg" (click)="$event.stopPropagation()" *ngIf="mostrarFormularioProduto"><button class="modal-close"
+            (click)="mostrarFormularioProduto=false">✕</button>
+        <div class="modal-content">
+            <h2 class="modal-name">{{produtoEditando?'Editar':'Novo'}} Produto</h2>
+            <div class="form-grid2">
+                <div class="form-group"><label>Nome</label><input [(ngModel)]="produtoForm.nome" /></div>
+                <div class="form-group"><label>Categoria</label><select [(ngModel)]="produtoForm.categoria">
+                        <option value="trufas">Trufas</option>
+                        <option value="macarons">Macarons</option>
+                        <option value="bombons">Bombons</option>
+                        <option value="tortas">Tortas</option>
+                        <option value="especiais">Especiais</option>
+                    </select></div>
+            </div>
+            <div class="form-group"><label>Descrição</label><textarea [(ngModel)]="produtoForm.descricao"></textarea>
+            </div>
+            <div class="form-grid2">
+                <div class="form-group"><label>Preço</label><input type="number" [(ngModel)]="produtoForm.preco" />
+                </div>
+                <div class="form-group"><label>Estoque</label><input type="number" [(ngModel)]="produtoForm.estoque" />
+                </div>
+            </div>
+            <div class="form-group"><label>Ingredientes</label><input [(ngModel)]="produtoForm.ingredientes" /></div>
+            <div class="form-group"><label>Imagem do Produto</label><input type="file" (change)="aoSelecionarArquivo($event)" accept="image/*" /></div>
+            <button class="btn-primary btn-full" (click)="salvarProduto()">Salvar Produto</button>
+        </div>
+    </div>
+</div>

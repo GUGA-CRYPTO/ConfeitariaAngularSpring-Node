@@ -1,0 +1,133 @@
+=== EXPLICANDO O CÓDIGO PARA UMA CRIANÇA ===
+
+*** ARQUIVO: admin.component.ts ***
+
+* ngOnInit()
+- É como se fosse a primeira coisa que o componente faz logo que acorda.
+- Ele olha para o endereço da página e guarda em uma caixinha chamada 'aba'.
+- Depois, ele chama o 'store.loadAdmin()' para carregar todas as informações do administrador, como se estivesse pegando todos os brinquedos da caixa antes de começar a brincar.
+
+* sair()
+- Quando você clica no botão de sair, ele joga fora o 'crachá' (token) que dizia quem era você no computador.
+- Depois, ele te manda de volta para a tela inicial.
+
+* get receitaTotal
+- É um ajudante que calcula o total de dinheiro que entrou.
+- Ele pega a lista de vendas e usa o 'reduce'. O 'reduce' é como uma calculadora mágica que vai somando o valor de cada venda uma a uma, até sobrar um valor só no final!
+
+* get despesasTotais
+- Funciona igualzinho à receita, mas soma todo o dinheiro que saiu (as despesas).
+
+* get lucro
+- Muito simples! Ele pega a 'receitaTotal' e diminui pelas 'despesasTotais'. É o que sobra no cofrinho!
+
+* get vendasRecentes
+- Pega a lista de vendas e usa o 'slice(0, 5)'. O 'slice' é como cortar um pedaço de um bolo: aqui estamos pegando só as 5 primeiras fatias (vendas).
+- Depois usa o 'map' para transformar essas vendas grandes em pedacinhos menores e mais fáceis de ler (apenas o nome, a data, o total e o status).
+
+* get ultimasVendas
+- Cria uma cópia da lista de vendas, recorta as 8 primeiras e vira de cabeça para baixo com o 'reverse()', para mostrar da mais nova para a mais velha.
+
+* get produtosMaisVendidos
+- Ele usa um 'Map', que é como um caderno de anotações mágico onde você anota "Nome do Doce" na página da esquerda e "Quantos vendi" na página da direita.
+- Ele olha venda por venda e vai fazendo risquinhos de soma nesse caderno.
+- No final, ele transforma esse caderno em uma lista, organiza do maior para o menor e pega só os 5 grandes campeões.
+
+* get kpis
+- Cria uma lista de cartõezinhos brilhantes (KPIs).
+- Ele monta os cartões com a receita, quantos produtos temos, as despesas e o lucro, e até muda a cor do cartão de lucro para verde (se ganhamos moedinhas) ou vermelho (se perdemos moedinhas).
+
+* alturaBarra(total)
+- Esse ajudante (parâmetro 'total') recebe um valor de venda e calcula o tamanho da barra para desenhar num gráfico.
+- Ele acha qual foi a venda mais cara usando o 'Math.max', só para não desenhar uma barra gigante que saia da tela.
+
+* adicionarItemVenda() e removerItemVenda(i)
+- Imagina que você está fazendo uma listinha de compras num papel.
+- O 'adicionar' coloca uma linha em branco no final da lista (push).
+- O 'remover' recebe o número da linha ('i') e usa uma borracha ('splice') para apagar aquela linha. Se apagar tudo, ele te dá uma linha nova vazia para você não ficar sem espaço.
+
+* get subtotalVenda e totalVenda
+- O 'subtotal' olha a sua listinha e calcula o preço das coisas puras, sem desconto.
+- O 'total' pega o subtotal e tira a porcentagem do desconto usando matemática!
+
+* registrarVenda()
+- Primeiro ele olha a sua listinha e transforma em itens de verdade.
+- Se você esquecer de dizer quem é o cliente ou não colocar nada na lista, ele te dá uma bronca com um 'alert()'.
+- Se tudo estiver certinho, ele embrulha tudo numa caixa e manda pro servidor usando o '.subscribe()'. O 'subscribe' é como ficar na porta de casa esperando o carteiro responder. Se der tudo certo ('next'), ele te avisa e limpa a tela. Se o carteiro tropeçar ('error'), ele te avisa do problema.
+
+* limparFormularioVenda()
+- Simplesmente apaga tudo o que você escreveu e deixa a tela branquinha para a próxima venda.
+
+* get vendasDeHoje e totalDeHoje
+- 'vendasDeHoje' filtra a lista olhando se a data da venda é igual ao dia de hoje.
+- 'totalDeHoje' junta as moedinhas só dessas vendas usando a nossa calculadora 'reduce'.
+
+* adicionarDespesa()
+- Vê se você preencheu o que comprou e quanto custou.
+- Se sim, embrulha a despesa, manda para o servidor (com o 'subscribe' esperando a resposta) e depois limpa os campos!
+
+* get vendasFiltradas, totalFiltrado e limparFiltros()
+- Usa o 'filter' para escolher só as vendas que estão entre duas datas ou que foram pagas de um jeito específico. E o total soma só essas que sobraram.
+
+* verDetalhes(s)
+- Pede para o servidor as informações completinhas de uma venda (o parâmetro 's' é a venda escolhida). E salva o resultado numa caixinha para mostrar na tela.
+
+* excluirDespesa(id) e excluirVenda(id)
+- Recebem o número de identificação ('id') do que você quer jogar no lixo.
+- Eles te fazem uma pergunta: "Tem certeza?" (confirm). Se você disser sim, eles pedem pro servidor jogar fora e atualizam a lista na tela.
+
+* atualizarStatusVenda(id, novoStatus) e iniciar/salvarEdicaoVenda()
+- Ajudantes que servem para trocar uma venda de "Pendente" para "Concluída", ou editar o que você escreveu errado e mandar pro servidor salvar.
+
+
+*** ARQUIVO: store.service.ts ***
+
+- O StoreService é como se fosse o cérebro que guarda a memória do aplicativo para a gente não precisar ficar perguntando a mesma coisa para o servidor o tempo todo.
+
+* loadPublic()
+- Ele chama a API pedindo os produtos e usa um '.pipe(catchError())'. O que é isso? O tubo (pipe) é o túnel por onde os dados passam. O 'catchError' é um guarda-costas que fica dentro do túnel; se der algum erro (tipo a internet cair), ele não deixa o aplicativo quebrar, ele te devolve uma caixinha de "produtos reservas" (fallbackProducts).
+- Depois do túnel, ele faz o 'subscribe' (espera chegar) e arruma os produtos com outro ajudante.
+
+* loadAdmin()
+- Esse usa uma mágica chamada 'forkJoin'. Imagina que você pede pro seu amigo comprar pão, e pra sua amiga comprar leite, e você só quer começar a cozinhar quando OS DOIS chegarem juntos. O 'forkJoin' pede produtos, vendas e despesas de uma vez só, e só avisa a gente quando todos chegarem!
+
+* reloadSales(), reloadExpenses(), reloadProducts()
+- Eles apenas pedem pro servidor mandar as informações novinhas de novo se alguém fez alguma alteração.
+
+* mapProduct(p, i)
+- É aqui que usamos o 'Record<string, string>'. Um Record é um dicionário mágico! É como um papel que diz: se a palavra for 'trufas', eu te dou o desenho '🍫'.
+- O parâmetro 'p' é o produto cru que veio da internet, e o 'i' é a posição dele na fila (0, 1, 2...).
+- Ele devolve o produto todo arrumado, com o desenho certo, e se ele for um dos primeiros da fila ('i < 3'), ele ganha uma medalha dourada de "Mais vendido" (bestseller).
+
+* fmt(v) e fmtDate(v)
+- O 'fmt' pega um número simples tipo 10 e veste roupas nele para ficar chique: 'R$ 10,00'.
+- O 'fmtDate' pega uma data de computador (cheia de letrinhas difíceis) e deixa com cara de relógio normal que a gente consegue ler.
+
+* categoryLabel(c)
+- É um tradutor! Se ele encontrar a palavra 'trufas' pequenininha, ele devolve 'Trufas' grandão e bonito.
+
+
+*** ARQUIVO: admin-produtos.component.ts ***
+
+* abrirNovoProduto()
+- Prepara um formulário novo em folha, com os campos em branco, dizendo que o produto começa custando zero. E aí manda uma ordem para abrir a janela na tela.
+
+* editarProduto(p)
+- O parâmetro 'p' é a caixinha do produto que vamos editar.
+- Em vez de limpar o formulário, ele preenche a folha com as informações que já estavam guardadas no produto 'p'.
+
+* aoSelecionarArquivo(event)
+- O parâmetro 'event' é o aviso que o computador dá quando você escolhe uma foto nova.
+- O ajudante "pesca" a foto que veio dentro desse aviso (o file) e guarda com carinho no formulário para a gente enviar depois.
+
+* salvarProduto()
+- Pega o nosso formulário preenchido e manda pelo correio (API) pro servidor. O 'subscribe' fica esperando a resposta. Se der tudo certo ('next'), ele fecha a janela e manda buscar a lista de produtos atualizada. Se der erro, ele te dá um alerta!
+
+* excluirProduto(id)
+- Você passa o número da plaquinha ('id') do produto que não quer mais. Ele pergunta se você tem certeza e, se sim, manda a API destruir e atualiza a tela na hora!
+
+* obterUrlImagem(imagem)
+- É um detetive de imagens. Você passa o nome de uma foto pra ele ('imagem').
+- Se não tiver foto, ele diz "nada aqui" (vazio).
+- Se a foto já for um link pronto da internet que começa com 'http', ele te dá do mesmo jeito.
+- Se não, ele tira as barrinhas tortas, junta com o endereço do seu próprio servidor e te devolve o caminho perfeito para a foto aparecer na tela!

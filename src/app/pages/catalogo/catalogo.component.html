@@ -1,0 +1,97 @@
+<main id="page-catalog" class="page active">
+    <div class="catalog-hero">
+        <div class="catalog-hero-bg"></div>
+        <div class="catalog-hero-content">
+            <p class="section-eyebrow">Nossa Coleção Completa</p>
+            <h1 class="catalog-title">Catálogo <em>Aura</em></h1>
+            <p>Descubra cada criação, cada sabor, cada história.</p>
+        </div>
+    </div>
+    <section class="catalog-section">
+        <div class="catalog-controls">
+            <div class="filter-tabs"><button class="filter-tab" [class.active]="filtroAtivo==='todos'"
+                    (click)="definirFiltro('todos')">Todos</button><button class="filter-tab"
+                    [class.active]="filtroAtivo==='trufas'" (click)="definirFiltro('trufas')">Trufas</button><button
+                    class="filter-tab" [class.active]="filtroAtivo==='macarons'"
+                    (click)="definirFiltro('macarons')">Macarons</button><button class="filter-tab"
+                    [class.active]="filtroAtivo==='bombons'" (click)="definirFiltro('bombons')">Bombons</button><button
+                    class="filter-tab" [class.active]="filtroAtivo==='tortas'"
+                    (click)="definirFiltro('tortas')">Tortas</button><button class="filter-tab"
+                    [class.active]="filtroAtivo==='especiais'" (click)="definirFiltro('especiais')">Especiais</button>
+            </div>
+            <div class="search-wrap"><input type="text" placeholder="Buscar doce..." [(ngModel)]="busca" /><span
+                    class="search-icon">⌕</span></div>
+        </div>
+        <div class="products-grid">
+            <div class="product-card" *ngFor="let p of produtosFiltrados" (click)="produtoSelecionado=p">
+                <div class="product-img" style="padding: 0; overflow: hidden; background: #f9f9f9; border-radius: 8px 8px 0 0; width: 100%; aspect-ratio: 4/3; position: relative; display: block;">
+                    <img *ngIf="p['imagem']" [src]="obterUrlImagem(p['imagem'])" [alt]="p.name" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover;">
+                    <span *ngIf="!p['imagem']" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: #bbb; font-size: 14px;">Sem Imagem</span>
+                    <div class="product-badge" *ngIf="p.badge" style="position: absolute; top: 8px; right: 8px; z-index: 1;">{{p.badge}}</div>
+                </div>
+                <div class="product-info">
+                    <div class="product-category">{{store.categoryLabel(p.category)}}</div>
+                    <h3 class="product-name">{{p.name}}</h3>
+                    <p class="product-desc">{{p.desc}}</p>
+                    <div class="product-footer"><span class="product-price">{{store.fmt(p.price)}}</span><button
+                            class="product-btn">+</button></div>
+                </div>
+            </div>
+        </div>
+        <div class="empty-state" *ngIf="produtosFiltrados.length===0"><span>✦</span>
+            <p>Nenhum doce encontrado</p>
+        </div>
+    </section>
+</main>
+<div class="modal-overlay" [class.open]="produtoSelecionado" (click)="produtoSelecionado=undefined; isOrdering=false">
+    <div class="modal" (click)="$event.stopPropagation()" *ngIf="produtoSelecionado"><button class="modal-close"
+            (click)="produtoSelecionado=undefined; isOrdering=false">✕</button>
+        <div class="modal-content" *ngIf="!isOrdering">
+            <div class="modal-product-img" style="padding: 0; overflow: hidden; background: #f9f9f9; border-radius: 8px; width: 100%; aspect-ratio: 16/9; margin-bottom: 1.5rem; position: relative; display: block;">
+                <img *ngIf="produtoSelecionado['imagem']" [src]="obterUrlImagem(produtoSelecionado['imagem'])" [alt]="produtoSelecionado.name" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover;">
+                <span *ngIf="!produtoSelecionado['imagem']" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: #bbb; font-size: 14px;">Sem Imagem</span>
+            </div>
+            <div class="modal-category">{{store.categoryLabel(produtoSelecionado.category)}}</div>
+            <h2 class="modal-name">{{produtoSelecionado.name}}</h2>
+            <p class="modal-desc">{{produtoSelecionado.desc}}</p>
+            <p class="modal-ingredients">Ingredientes: {{produtoSelecionado.ingredients}}</p>
+            <div class="modal-footer"><span class="modal-price">{{store.fmt(produtoSelecionado.price)}}</span><button
+                    class="btn-primary" (click)="abrirPedido()">Encomendar</button></div>
+        </div>
+
+        <div class="modal-content" *ngIf="isOrdering">
+            <div class="modal-category">Finalizar Encomenda</div>
+            <h2 class="modal-name">{{produtoSelecionado.name}}</h2>
+            
+            <div class="order-form" style="margin-top: 1.5rem; display: flex; flex-direction: column; gap: 1rem;">
+                <div>
+                    <label style="display: block; margin-bottom: 0.5rem; font-weight: 500; font-size: 0.875rem;">Seu Nome</label>
+                    <input type="text" [(ngModel)]="pedido.cliente_nome" placeholder="Digite seu nome completo" style="width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: 4px;" required>
+                </div>
+                
+                <div style="display: flex; gap: 1rem;">
+                    <div style="flex: 1;">
+                        <label style="display: block; margin-bottom: 0.5rem; font-weight: 500; font-size: 0.875rem;">Quantidade</label>
+                        <input type="number" [(ngModel)]="pedido.quantidade" min="1" style="width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: 4px;">
+                    </div>
+                    <div style="flex: 1;">
+                        <label style="display: block; margin-bottom: 0.5rem; font-weight: 500; font-size: 0.875rem;">Pagamento</label>
+                        <select [(ngModel)]="pedido.forma_pagamento" style="width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: 4px; background: white;">
+                            <option value="pix">PIX</option>
+                            <option value="cartao">Cartão</option>
+                            <option value="dinheiro">Dinheiro</option>
+                        </select>
+                    </div>
+                </div>
+                <div>
+                    <label style="display: block; margin-bottom: 0.5rem; font-weight: 500; font-size: 0.875rem;">Observações</label>
+                    <textarea [(ngModel)]="pedido.observacao" placeholder="Alguma restrição ou pedido especial?" rows="3" style="width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: 4px; resize: vertical;"></textarea>
+                </div>
+                <div class="modal-footer" style="margin-top: 1rem; border-top: 1px solid #eee; padding-top: 1.5rem;">
+                    <div style="display: flex; flex-direction: column; align-items: flex-start;"><span style="font-size: 0.875rem; color: #666; margin-bottom: 0.25rem;">Total a pagar</span><span class="modal-price">{{store.fmt(produtoSelecionado.price * pedido.quantidade)}}</span></div>
+                    <div style="display: flex; gap: 0.5rem;"><button (click)="isOrdering=false" style="padding: 0.75rem 1.5rem; border-radius: 99px; border: 1px solid #ddd; background: white; cursor: pointer; font-weight: 600;">Voltar</button><button class="btn-primary" (click)="enviarPedido()">Confirmar</button></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

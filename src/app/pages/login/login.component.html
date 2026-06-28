@@ -1,0 +1,31 @@
+<main id="page-login" class="page active">
+    <div class="login-page">
+        <div class="login-deco">
+            <div class="login-deco-ring r1"></div>
+            <div class="login-deco-ring r2"></div>
+            <div class="login-deco-ring r3"></div>
+            <div class="login-logo-big"><span>✦</span>
+                <p>AURA</p>
+            </div>
+        </div>
+        <div class="login-card">
+            <div>
+                <div class="login-header"><span class="login-eyebrow">Área Restrita</span>
+                    <h2 class="login-title">Painel <em>Administrativo</em></h2>
+                    <p class="login-sub">Acesso exclusivo para a gestão da confeitaria.</p>
+                </div>
+                <div class="login-form">
+                    <div class="form-group"><label>Usuário</label><input type="text" [(ngModel)]="user"
+                            placeholder="admin" autocomplete="off" /></div>
+                    <div class="form-group"><label>Senha</label><input type="password" [(ngModel)]="pass"
+                            placeholder="••••••••" (keydown.enter)="doLogin()" /></div>
+                    <div class="login-error" [class.show]="error">Credenciais inválidas. Tente novamente.</div><button
+                        type="button" class="btn-primary btn-full" (click)="doLogin()">{{loading?'Entrando...':'Entrar
+                        no Painel ✦'}}</button><button type="button" class="btn-ghost btn-full" routerLink="/"
+                        style="margin-top:.7rem">← Voltar ao Site</button>
+                    <p class="login-hint">Usuário: <b>admin</b> · Senha: <b>aura2025</b></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>

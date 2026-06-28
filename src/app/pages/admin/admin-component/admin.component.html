@@ -1,0 +1,269 @@
+<main id="page-admin" class="page active">
+    <div class="admin-layout">
+        <aside class="admin-sidebar">
+            <div class="sidebar-logo"><span class="logo-icon" style="font-size:1.3rem">✦</span>
+                <div><span class="logo-text" style="font-size:1.1rem">AURA</span><br /><span
+                        style="font-size:.55rem;color:var(--gold);letter-spacing:.2em">ADMIN</span></div>
+            </div>
+            <nav class="sidebar-nav"><a class="sidebar-link" routerLink="/admin/dashboard"
+                    routerLinkActive="active"><span class="sl-icon">◈</span> Dashboard</a><a class="sidebar-link"
+                    routerLink="/admin/produtos" routerLinkActive="active"><span class="sl-icon">✦</span> Produtos</a><a
+                    class="sidebar-link" routerLink="/admin/vendas" routerLinkActive="active"><span
+                        class="sl-icon">◆</span> Registrar Venda</a><a class="sidebar-link"
+                    routerLink="/admin/financeiro" routerLinkActive="active"><span class="sl-icon">★</span>
+                    Financeiro</a><a class="sidebar-link" routerLink="/admin/historico" routerLinkActive="active"><span
+                        class="sl-icon">◉</span> Histórico de Vendas</a></nav>
+            <div class="sidebar-footer"><button class="btn-logout" (click)="sair()">⎋ Sair</button><button
+                    class="btn-ghost" style="width:100%;margin-top:.5rem;font-size:.7rem" routerLink="/">← Ver
+                    Site</button></div>
+        </aside>
+        <div class="admin-main">
+            <section class="admin-tab active" *ngIf="aba==='dashboard'">
+                <div class="admin-header">
+                    <h1 class="admin-title">Dashboard <em>Aura</em></h1><span class="admin-date">{{todayLabel}}</span>
+                </div>
+                <div class="kpi-grid">
+                    <div class="kpi-card" *ngFor="let k of kpis">
+                        <div class="kpi-label">{{k.label}}</div>
+                        <div class="kpi-value" [style.color]="k.color||''">{{k.value}}</div>
+                        <div class="kpi-sub">{{k.sub}}</div>
+                        <div class="kpi-icon">{{k.icon}}</div>
+                    </div>
+                </div>
+                <div class="dash-grid">
+                    <div class="dash-card">
+                        <h3 class="dash-card-title">✦ Vendas Recentes</h3>
+                        <div *ngIf="vendasRecentes.length; else noSales">
+                            <div class="finance-item" *ngFor="let s of vendasRecentes"><span
+                                    class="finance-item-label">{{s.client}} · {{store.fmtDate(s.date)}}
+                                    <span style="padding: 2px 6px; margin-left: 6px; border-radius: 4px; font-size: 0.65rem; font-weight: 600; color: #fff;" [style.backgroundColor]="s.status === 'Concluída' ? 'var(--success, #2ecc71)' : (s.status === 'Cancelada' ? 'var(--danger, #e74c3c)' : '#f39c12')">
+                                        {{s.status}}
+                                    </span>
+                                </span><span
+                                    class="finance-item-val income">{{store.fmt(s.total)}}</span></div>
+                        </div><ng-template #noSales>
+                            <p class="muted-msg">Nenhuma venda ainda.</p>
+                        </ng-template>
+                    </div>
+                    <div class="dash-card">
+                        <h3 class="dash-card-title">◆ Top Produtos</h3>
+                        <div *ngIf="produtosMaisVendidos.length; else noTop">
+                            <div class="finance-item" *ngFor="let t of produtosMaisVendidos"><span
+                                    class="finance-item-label">{{t.name}}</span><span class="finance-item-val">{{t.qty}}
+                                    un.</span></div>
+                        </div><ng-template #noTop>
+                            <p class="muted-msg">Nenhuma venda ainda.</p>
+                        </ng-template>
+                    </div>
+                </div>
+                <div class="dash-card" style="margin-top:1.5rem">
+                    <h3 class="dash-card-title">★ Receita — Últimas Vendas</h3>
+                    <div class="mini-chart" *ngIf="ultimasVendas.length; else noChart">
+                        <div class="mini-bar-wrap" *ngFor="let s of ultimasVendas">
+                            <div class="mini-bar" [style.height.px]="alturaBarra(s.valor_total)"><span
+                                    class="mini-bar-val">{{store.fmt(s.valor_total)}}</span></div><span
+                                class="mini-bar-label">{{s.data_venda | date:'dd/MM'}}</span>
+                        </div>
+                    </div><ng-template #noChart>
+                        <p class="muted-msg">Registre vendas para ver o gráfico.</p>
+                    </ng-template>
+                </div>
+            </section>
+            <section class="admin-tab active" *ngIf="aba==='produtos'">
+                <app-admin-produtos></app-admin-produtos>
+            </section>
+            <section class="admin-tab active" *ngIf="aba==='vendas'">
+                <div class="admin-header">
+                    <h1 class="admin-title">Registrar <em>Venda</em></h1>
+                </div>
+                <div class="dash-grid">
+                    <div class="admin-form-card">
+                        <h3 class="form-card-title">Nova Venda</h3>
+                        <div class="form-group"><label>Cliente</label><input type="text" [(ngModel)]="cliente"
+                                placeholder="Nome do cliente" /></div>
+                        <div class="sale-items">
+                            <div class="sale-item-row" *ngFor="let item of itensVenda; let i=index"><select
+                                    [(ngModel)]="item.productId">
+                                    <option [ngValue]="0">— Selecione o produto —</option>
+                                    <option *ngFor="let p of store.products" [ngValue]="p.id">{{p.name}} ({{store.fmt(p.price)}})</option>
+                                </select><input type="number" min="1" [(ngModel)]="item.quantidade" /><button
+                                    class="tbl-btn del" (click)="removerItemVenda(i)">✕</button></div>
+                        </div><button class="btn-ghost" style="margin:.5rem 0 1.5rem" (click)="adicionarItemVenda()">+
+                            Adicionar Item</button>
+                        <div class="form-grid2">
+                            <div class="form-group"><label>Desconto (%)</label><input type="number"
+                                    [(ngModel)]="desconto" min="0" max="100" /></div>
+                            <div class="form-group"><label>Pagamento</label><select [(ngModel)]="formaPagamento">
+                                    <option value="pix">PIX</option>
+                                    <option value="credito">Crédito</option>
+                                    <option value="debito">Débito</option>
+                                    <option value="dinheiro">Dinheiro</option>
+                                </select></div>
+                        </div>
+                        <div class="form-group"><label>Observação</label><textarea rows="2"
+                                [(ngModel)]="observacao"></textarea></div>
+                        <div class="sale-total"><span>Total</span><strong>{{store.fmt(totalVenda)}}</strong></div>
+                        <div class="form-actions"><button class="btn-primary" (click)="registrarVenda()">Registrar
+                                Venda</button><button class="btn-ghost" (click)="limparFormularioVenda()">Limpar</button></div>
+                    </div>
+                    <div class="dash-card">
+                        <h3 class="dash-card-title">Resumo do Dia</h3>
+                        <div class="day-summary">
+                            <div class="day-sum-item"><span>Vendas hoje</span><strong>{{vendasDeHoje.length}}</strong>
+                            </div>
+                            <div class="day-sum-item"><span>Total hoje</span><strong
+                                    style="color:var(--gold)">{{store.fmt(totalDeHoje)}}</strong></div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <section class="admin-tab active" *ngIf="aba==='financeiro'">
+                <div class="admin-header">
+                    <h1 class="admin-title">Fluxo <em>Financeiro</em></h1>
+                </div>
+                <div class="finance-kpis">
+                    <div class="finance-kpi"><span>Receita Total</span><strong
+                            class="income">{{store.fmt(receitaTotal)}}</strong></div>
+                    <div class="finance-kpi"><span>Despesas</span><strong
+                            class="expense">{{store.fmt(despesasTotais)}}</strong></div>
+                    <div class="finance-kpi"><span>Lucro</span><strong
+                            [class]="lucro>=0?'income':'expense'">{{store.fmt(lucro)}}</strong></div>
+                </div>
+                <div class="dash-grid">
+                    <div class="admin-form-card">
+                        <h3 class="form-card-title">Nova Despesa</h3>
+                        <div class="form-group"><label>Data</label><input type="date" [(ngModel)]="despesa.data" />
+                        </div>
+                        <div class="form-group"><label>Tipo</label><select [(ngModel)]="despesa.tipo">
+                                <option value="ingredientes">Ingredientes</option>
+                                <option value="embalagens">Embalagens</option>
+                                <option value="aluguel">Aluguel</option>
+                                <option value="marketing">Marketing</option>
+                                <option value="outros">Outros</option>
+                            </select></div>
+                        <div class="form-group"><label>Descrição</label><input type="text" [(ngModel)]="despesa.descricao" />
+                        </div>
+                        <div class="form-group"><label>Valor</label><input type="number" [(ngModel)]="despesa.valor"
+                                step="0.01" /></div><button class="btn-primary btn-full"
+                            (click)="adicionarDespesa()">Adicionar Despesa</button>
+                    </div>
+                    <div class="dash-card">
+                        <h3 class="dash-card-title">Histórico de Despesas</h3>
+                        <div class="finance-list">
+                            <div class="finance-item" *ngFor="let e of store.expenses"><span
+                                    class="finance-item-label">{{e.descricao}} · {{e.data_despesa |
+                                    date:'dd/MM/yyyy'}}</span><span
+                                    class="finance-item-val expense">{{store.fmt(e.valor)}} <button class="tbl-btn del"
+                                        (click)="excluirDespesa(e.id)">x</button></span></div>
+                            <p *ngIf="!store.expenses.length" class="muted-msg">Nenhuma despesa cadastrada.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <section class="admin-tab active" *ngIf="aba==='historico'">
+                <div class="admin-header">
+                    <h1 class="admin-title">Histórico de <em>Vendas</em></h1>
+                    <div class="logs-filters"><input type="date" [(ngModel)]="dataInicial" /><span>até</span><input type="date"
+                            [(ngModel)]="dataFinal" /><select [(ngModel)]="filtroPagamento">
+                            <option value="">Todos</option>
+                            <option value="pix">PIX</option>
+                            <option value="credito">Crédito</option>
+                            <option value="debito">Débito</option>
+                            <option value="dinheiro">Dinheiro</option>
+                        </select><button class="btn-ghost" (click)="limparFiltros()">Limpar</button></div>
+                </div>
+                <div class="logs-summary">
+                    <div class="log-sum-card"><span>Vendas Encontradas</span><strong>{{vendasFiltradas.length}}</strong>
+                    </div>
+                    <div class="log-sum-card"><span>Total</span><strong>{{store.fmt(totalFiltrado)}}</strong></div>
+                </div>
+                <div class="admin-table-wrap">
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Data/Hora</th>
+                                <th>Cliente</th>
+                                <th>Pagamento</th>
+                                <th>Desconto</th>
+                                <th>Total</th>
+                                <th>Status</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let s of vendasFiltradas">
+                                <td>#{{s.id}}</td>
+                                <td>{{store.fmtDate(s.data_venda)}}</td>
+                                <td>{{s.cliente_nome}}</td>
+                                <td>{{s.forma_pagamento}}</td>
+                                <td>{{s.desconto}}%</td>
+                                <td style="color:var(--gold)">{{store.fmt(s.valor_total)}}</td>
+                                <td>
+                                    <span style="padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.75rem; font-weight: 600; color: #fff;" [style.backgroundColor]="s.status === 'Concluída' ? 'var(--success, #2ecc71)' : (s.status === 'Cancelada' ? 'var(--danger, #e74c3c)' : '#f39c12')">
+                                        {{s.status}}
+                                    </span>
+                                </td>
+                                <td><button class="tbl-btn edit" (click)="verDetalhes(s)">Detalhes</button></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div class="empty-state" *ngIf="!vendasFiltradas.length"><span>◉</span>
+                        <p>Nenhuma venda encontrada</p>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+</main>
+<div class="modal-overlay" [class.open]="vendaSelecionada" (click)="vendaSelecionada=undefined">
+    <div class="modal modal-lg" (click)="$event.stopPropagation()" *ngIf="vendaSelecionada"><button class="modal-close"
+            (click)="vendaSelecionada=undefined">✕</button>
+        <div class="modal-content">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <h2 class="modal-name" style="margin: 0;">Venda #{{vendaSelecionada.id}}
+                    <span *ngIf="!editandoVenda" style="padding: 0.2rem 0.5rem; margin-left: 0.5rem; border-radius: 4px; font-size: 0.75rem; font-weight: 600; color: #fff; vertical-align: middle;" [style.backgroundColor]="vendaSelecionada.status === 'Concluída' ? 'var(--success, #2ecc71)' : (vendaSelecionada.status === 'Cancelada' ? 'var(--danger, #e74c3c)' : '#f39c12')">
+                        {{vendaSelecionada.status}}
+                    </span>
+                </h2>
+                <button *ngIf="!editandoVenda" class="btn-ghost" style="padding: 0.2rem 0.5rem; font-size: 0.8rem;" (click)="iniciarEdicaoVenda()">✏️ Editar</button>
+            </div>
+            
+            <ng-container *ngIf="!editandoVenda">
+                <p class="modal-desc">{{vendaSelecionada.cliente_nome}} · {{store.fmtDate(vendaSelecionada.data_venda)}}</p>
+                <div class="finance-item" *ngFor="let i of vendaSelecionada.itens"><span class="finance-item-label">{{i.nome}}
+                        x{{i.quantidade}}</span><span class="finance-item-val">{{store.fmt(i.subtotal_item)}}</span></div>
+                <p *ngIf="vendaSelecionada.observacao" style="font-size: 0.85rem; color: #666; margin-top: 1rem; text-align: left;"><strong>Obs:</strong> {{vendaSelecionada.observacao}}</p>
+            </ng-container>
+
+            <div *ngIf="editandoVenda" style="margin-top: 1rem; text-align: left;">
+                <div class="form-group"><label>Cliente</label><input type="text" [(ngModel)]="vendaEditada.cliente_nome" /></div>
+                <div class="form-group"><label>Pagamento</label><select [(ngModel)]="vendaEditada.forma_pagamento">
+                    <option value="pix">PIX</option><option value="credito">Crédito</option><option value="debito">Débito</option><option value="dinheiro">Dinheiro</option>
+                </select></div>
+                <div class="form-group"><label>Observação</label><input type="text" [(ngModel)]="vendaEditada.observacao" /></div>
+                <button class="btn-primary btn-full" (click)="salvarEdicaoVenda()">Salvar Alterações</button>
+            </div>
+
+            <div class="form-group" *ngIf="!editandoVenda" style="margin-top: 1.5rem; text-align: left;">
+                <label style="font-size: 0.85rem; color: #666; margin-bottom: 0.3rem; display: block;">Status da Venda</label>
+                <div style="display: flex; gap: 0.5rem;">
+                    <select #statusSelect [value]="vendaSelecionada.status" style="flex: 1; padding: 0.5rem; border: 1px solid #ddd; border-radius: 4px;">
+                        <option value="Concluída">Concluída</option>
+                        <option value="Pendente">Pendente</option>
+                        <option value="Cancelada">Cancelada</option>
+                    </select>
+                    <button class="btn-primary" style="padding: 0.5rem 1rem; border-radius: 4px; font-size: 0.9rem;" (click)="atualizarStatusVenda(vendaSelecionada.id, statusSelect.value)">Atualizar</button>
+                </div>
+            </div>
+
+            <div class="modal-footer" *ngIf="!editandoVenda" style="display: flex; justify-content: space-between; align-items: center; margin-top: 1rem;">
+                <button class="tbl-btn del" (click)="excluirVenda(vendaSelecionada.id)" style="padding: 0.5rem 1rem; border-radius: 4px;">Excluir Venda</button>
+                <div>
+                    <span style="margin-right: 0.5rem;">Total</span>
+                    <span class="modal-price">{{store.fmt(vendaSelecionada.valor_total)}}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

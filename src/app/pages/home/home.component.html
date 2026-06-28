@@ -1,0 +1,227 @@
+<main id="page-home" class="page active">
+  <section class="hero" id="hero">
+    <div class="hero-bg">
+      <div class="hero-pattern"></div>
+      <div class="hero-glow"></div>
+    </div>
+    <div class="hero-content">
+      <p class="hero-eyebrow">Confeitaria Artesanal de Luxo</p>
+      <h1 class="hero-title">Doces que<br /><em>encantam</em><br />a alma</h1>
+      <p class="hero-desc">
+        Cada criação é uma obra de arte feita à mão,<br />com ingredientes
+        selecionados e um toque de magia.
+      </p>
+      <div class="hero-actions">
+        <button class="btn-primary" routerLink="/catalogo">Ver Catálogo</button
+        ><button class="btn-ghost" (click)="scrollTo('about')">
+          Nossa História
+        </button>
+      </div>
+    </div>
+    <div class="hero-visual">
+      <div class="hero-circle-wrap">
+        <div class="hero-circle c1"></div>
+        <div class="hero-circle c2"></div>
+        <div class="hero-circle c3"></div>
+        <div class="hero-plate">
+          <div class="plate-shine"></div>
+          <div class="plate-content">
+            <span class="plate-emoji">🍫</span
+            ><span class="plate-label">Edição Especial</span>
+          </div>
+        </div>
+      </div>
+      <div class="floating-badge b1">✦ Artesanal</div>
+      <div class="floating-badge b2">★ 5 estrelas</div>
+      <div class="floating-badge b3">♦ Premium</div>
+    </div>
+    <div class="hero-scroll-hint">
+      <span>Descubra mais</span>
+      <div class="scroll-line"></div>
+    </div>
+  </section>
+  <div class="marquee-wrap">
+    <div class="marquee-track">
+      <span>✦ Trufas Belgas</span><span>◆ Macarons Parisienses</span
+      ><span>✦ Bombons Artesanais</span><span>◆ Tortas Gourmet</span
+      ><span>✦ Pralinês</span><span>◆ Caramelos de Fleur de Sel</span
+      ><span>✦ Ganaches Exóticas</span><span>◆ Barras de Chocolate</span>
+    </div>
+  </div>
+  <section class="about" id="about">
+    <div class="about-left">
+      <div class="about-img-wrap">
+        <div class="about-img-box">
+          <div class="about-img-inner">
+            <div class="about-visual">
+              <span>🎂</span>
+              <div class="about-visual-ring r1"></div>
+              <div class="about-visual-ring r2"></div>
+            </div>
+          </div>
+        </div>
+        <div class="about-stat-card">
+          <span class="stat-num">12+</span
+          ><span class="stat-label">Anos de Tradição</span>
+        </div>
+      </div>
+    </div>
+    <div class="about-right">
+      <p class="section-eyebrow">Nossa Essência</p>
+      <h2 class="section-title">
+        A arte de <em>transformar</em> ingredientes em memórias
+      </h2>
+      <p class="about-text">
+        A Aura nasceu da paixão por criar momentos únicos através do sabor.
+        Fundada em 2012, nossa confeitaria combina técnicas clássicas da alta
+        gastronomia europeia com ingredientes locais de excelência.
+      </p>
+      <p class="about-text">
+        Cada doce carrega nossa assinatura: equilíbrio perfeito entre sabor,
+        textura e beleza. Acreditamos que um bom doce não apenas satisfaz — ele
+        conta uma história.
+      </p>
+      <div class="about-pillars">
+        <div class="pillar">
+          <span class="pillar-icon">✦</span>
+          <div>
+            <strong>Ingredientes Selecionados</strong>
+            <p>Chocolate belga 70%, frutas da estação e especiarias do mundo</p>
+          </div>
+        </div>
+        <div class="pillar">
+          <span class="pillar-icon">◆</span>
+          <div>
+            <strong>Feito à Mão</strong>
+            <p>Cada peça moldada com cuidado e precisão artesanal</p>
+          </div>
+        </div>
+        <div class="pillar">
+          <span class="pillar-icon">★</span>
+          <div>
+            <strong>Embalagem Exclusiva</strong>
+            <p>Design premium para presentear com elegância</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <section class="bestsellers" id="bestsellers">
+    <div class="section-header">
+      <p class="section-eyebrow">Mais Amados</p>
+      <h2 class="section-title">Nossos <em>campeões</em> de sabor</h2>
+      <p class="section-sub">
+        Os favoritos que conquistaram os paladares mais exigentes
+      </p>
+    </div>
+    <div class="products-grid">
+      <div
+        class="product-card"
+        *ngFor="let p of bestsellers"
+        (click)="selectedProduct = p"
+      >
+        <div class="product-img" style="padding: 0; overflow: hidden; background: #f9f9f9; border-radius: 8px 8px 0 0; width: 100%; aspect-ratio: 4/3; position: relative; display: block;">
+          <img *ngIf="p.imagem" [src]="obterUrlImagem(p.imagem)" [alt]="p.name" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover;" />
+          <span *ngIf="!p.imagem" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 2rem;">{{ p.emoji }}</span>
+          <div class="product-badge" *ngIf="p.badge" style="position: absolute; top: 8px; right: 8px; z-index: 1;">{{ p.badge }}</div>
+        </div>
+        <div class="product-info">
+          <div class="product-category">
+            {{ store.categoryLabel(p.category) }}
+          </div>
+          <h3 class="product-name">{{ p.name }}</h3>
+          <p class="product-desc">{{ p.desc }}</p>
+          <div class="product-footer">
+            <span class="product-price">{{ store.fmt(p.price) }}</span
+            ><button class="product-btn">+</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="see-more-wrap">
+      <button class="btn-primary" routerLink="/catalogo">
+        Ver Todos os Doces <span>→</span>
+      </button>
+    </div>
+  </section>
+  <section class="testimonials" id="testimonials">
+    <div class="section-header">
+      <p class="section-eyebrow">Depoimentos</p>
+      <h2 class="section-title">O que dizem<br /><em>nossos clientes</em></h2>
+    </div>
+    <div class="testimonials-track">
+      <div class="testimonial-card" *ngFor="let t of testimonials">
+        <div class="t-stars">★★★★★</div>
+        <p class="t-text">"{{ t.text }}"</p>
+        <div class="t-author">
+          <div class="t-avatar">{{ t.initial }}</div>
+          <div>
+            <strong>{{ t.name }}</strong
+            ><span>{{ t.city }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <section class="newsletter">
+    <div class="newsletter-inner">
+      <p class="section-eyebrow">Exclusividade</p>
+      <h2>Receba novidades <em>em primeira mão</em></h2>
+      <p>
+        Edições limitadas, promoções e receitas secretas direto no seu e-mail.
+      </p>
+      <div class="newsletter-form">
+        <input
+          type="email"
+          [(ngModel)]="newsletterEmail"
+          placeholder="seu@email.com"
+        /><button class="btn-primary" (click)="subscribeNewsletter()">
+          Inscrever-se
+        </button>
+      </div>
+    </div>
+  </section>
+</main>
+<div
+  class="modal-overlay"
+  [class.open]="selectedProduct"
+  (click)="selectedProduct = undefined; isOrdering = false"
+>
+  <div class="modal" (click)="$event.stopPropagation()" *ngIf="selectedProduct">
+    <button class="modal-close" (click)="selectedProduct = undefined; isOrdering = false">✕</button>
+    <div class="modal-content">
+      <ng-container *ngIf="!isOrdering">
+        <div class="modal-product-img" style="padding: 0; overflow: hidden; background: #f9f9f9; border-radius: 8px; width: 100%; aspect-ratio: 16/9; margin-bottom: 1.5rem; position: relative; display: block;">
+          <img *ngIf="selectedProduct.imagem" [src]="obterUrlImagem(selectedProduct.imagem)" [alt]="selectedProduct.name" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover;" />
+          <span *ngIf="!selectedProduct.imagem" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 3rem;">{{ selectedProduct.emoji }}</span>
+        </div>
+        <div class="modal-category">
+          {{ store.categoryLabel(selectedProduct.category) }}
+        </div>
+        <h2 class="modal-name">{{ selectedProduct.name }}</h2>
+        <p class="modal-desc">{{ selectedProduct.desc }}</p>
+        <p class="modal-ingredients">
+          Ingredientes: {{ selectedProduct.ingredients }}
+        </p>
+        <div class="modal-footer">
+          <span class="modal-price">{{ store.fmt(selectedProduct.price) }}</span
+          ><button class="btn-primary" (click)="abrirPedido()">Encomendar</button>
+        </div>
+      </ng-container>
+      <ng-container *ngIf="isOrdering">
+        <h2 class="modal-name">Seu Pedido</h2>
+        <p style="margin-bottom: 1rem; color: #666; text-align: left;">Você está pedindo: <strong>{{ selectedProduct.name }}</strong></p>
+        
+        <div class="form-group" style="text-align: left; margin-bottom: 0.8rem;"><label>Seu Nome</label><input type="text" [(ngModel)]="pedido.cliente_nome" placeholder="Como podemos te chamar?" style="width: 100%; padding: 0.5rem; border: 1px solid #ddd; border-radius: 4px;"/></div>
+        <div class="form-group" style="text-align: left; margin-bottom: 0.8rem;"><label>Quantidade</label><input type="number" min="1" [(ngModel)]="pedido.quantidade" style="width: 100%; padding: 0.5rem; border: 1px solid #ddd; border-radius: 4px;"/></div>
+        <div class="form-group" style="text-align: left; margin-bottom: 0.8rem;"><label>Pagamento</label><select [(ngModel)]="pedido.forma_pagamento" style="width: 100%; padding: 0.5rem; border: 1px solid #ddd; border-radius: 4px;"><option value="pix">PIX</option><option value="credito">Cartão de Crédito</option><option value="debito">Cartão de Débito</option><option value="dinheiro">Dinheiro</option></select></div>
+        <div class="form-group" style="text-align: left; margin-bottom: 1.5rem;"><label>Observação (Endereço de entrega e e-mail)</label><textarea [(ngModel)]="pedido.observacao" rows="2" style="width: 100%; padding: 0.5rem; border: 1px solid #ddd; border-radius: 4px;"></textarea></div>
+        
+        <div class="modal-footer" style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #ddd; padding-top: 1rem;">
+          <span class="modal-price">{{ store.fmt(selectedProduct.price * pedido.quantidade) }}</span
+          ><button class="btn-primary" (click)="enviarPedido()">Finalizar Pedido</button>
+        </div>
+      </ng-container>
+    </div>
+  </div>
+</div>
