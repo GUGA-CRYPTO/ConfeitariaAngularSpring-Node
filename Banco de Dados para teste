@@ -1,0 +1,86 @@
+Banco de Dados para testar a aplicação
+
+DROP DATABASE IF EXISTS aura_db;
+CREATE DATABASE aura_db;
+USE aura_db;
+
+CREATE TABLE usuarios (
+  id BIGINT PRIMARY KEY AUTO_INCREMENT,
+  nome VARCHAR(120) NOT NULL,
+  email VARCHAR(160) NOT NULL,
+  usuario VARCHAR(60) NOT NULL UNIQUE,
+  senha VARCHAR(64) NOT NULL,
+  tipo_usuario VARCHAR(30) DEFAULT 'admin',
+  data_cadastro DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE produtos (
+  id BIGINT PRIMARY KEY AUTO_INCREMENT,
+  nome VARCHAR(150) NOT NULL,
+  descricao TEXT,
+  categoria VARCHAR(50),
+  preco DECIMAL(10,2) NOT NULL,
+  estoque INT DEFAULT 0,
+  ingredientes TEXT,
+  emoji VARCHAR(10),
+  destaque BOOLEAN DEFAULT FALSE,
+  badge VARCHAR(50),
+  status VARCHAR(30) DEFAULT 'Ativo',
+  imagem VARCHAR(255),
+  data_cadastro DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE vendas (
+  id BIGINT PRIMARY KEY AUTO_INCREMENT,
+  usuario_id BIGINT,
+  cliente_nome VARCHAR(150),
+  forma_pagamento VARCHAR(50),
+  observacao TEXT,
+  desconto DECIMAL(10,2) DEFAULT 0,
+  subtotal DECIMAL(10,2) DEFAULT 0,
+  valor_total DECIMAL(10,2) DEFAULT 0,
+  data_venda DATETIME DEFAULT CURRENT_TIMESTAMP,
+  status VARCHAR(30) DEFAULT 'Concluída',
+  FOREIGN KEY (usuario_id) REFERENCES usuarios(id)
+);
+
+CREATE TABLE venda_itens (
+  id BIGINT PRIMARY KEY AUTO_INCREMENT,
+  venda_id BIGINT NOT NULL,
+  produto_id BIGINT NOT NULL,
+  nome VARCHAR(150), -- Coluna adicionada para armazenar o nome do produto
+  quantidade INT NOT NULL,
+  preco_unitario DECIMAL(10,2) NOT NULL,
+  subtotal_item DECIMAL(10,2) DEFAULT 0,
+  FOREIGN KEY (venda_id) REFERENCES vendas(id) ON DELETE CASCADE,
+  FOREIGN KEY (produto_id) REFERENCES produtos(id)
+);
+
+CREATE TABLE despesas (
+  id BIGINT PRIMARY KEY AUTO_INCREMENT,
+  usuario_id BIGINT,
+  descricao VARCHAR(255) NOT NULL,
+  categoria VARCHAR(50),
+  tipo VARCHAR(50),
+  valor DECIMAL(10,2) NOT NULL,
+  data_despesa DATE NOT NULL,
+  status VARCHAR(30) DEFAULT 'Pago',
+  data_registro DATETIME DEFAULT CURRENT_TIMESTAMP,
+  criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (usuario_id) REFERENCES usuarios(id)
+);
+
+-- Inserção de dados (sem alterações)
+INSERT INTO usuarios (nome, email, usuario, senha, tipo_usuario) VALUES ('Administrador Aura', 'admin@auraconfeitaria.com.br', 'admin', '76e2b25e0a177df52c35a790c550544c', 'admin');
+INSERT INTO produtos (nome, descricao, categoria, preco, estoque, ingredientes, emoji, destaque, badge, status, imagem) VALUES
+('Trufa Belga', 'Trufa artesanal feita com chocolate belga 70%.', 'trufas', 12.90, 20, 'Chocolate belga, creme de leite, cacau em pó', '🍫', TRUE, 'Mais vendido', 'Ativo', NULL),
+('Macaron Framboesa', 'Macaron francês com recheio delicado de framboesa.', 'macarons', 9.90, 30, 'Farinha de amêndoas, açúcar, clara, framboesa', '🍓', TRUE, 'Premium', 'Ativo', NULL),
+('Bombom de Avelã', 'Bombom recheado com creme de avelã.', 'bombons', 7.50, 25, 'Chocolate ao leite, creme de avelã, castanhas', '🌰', TRUE, 'Novo', 'Ativo', NULL),
+('Torta de Chocolate', 'Torta gourmet com ganache intensa.', 'tortas', 89.90, 5, 'Chocolate meio amargo, massa amanteigada, creme', '🍰', FALSE, NULL, 'Ativo', NULL),
+('Caramelo Fleur de Sel', 'Caramelo artesanal com toque de flor de sal.', 'especiais', 6.90, 40, 'Açúcar, manteiga, creme de leite, flor de sal', '🍬', FALSE, 'Especial', 'Ativo', NULL),
+('Pralinê Crocante', 'Pralinê artesanal com textura crocante.', 'bombons', 8.90, 35, 'Chocolate, amêndoas, açúcar caramelizado', '🍥', FALSE, NULL, 'Ativo', NULL),
+('Ganache Exótica', 'Doce fino com ganache e especiarias especiais.', 'especiais', 11.90, 15, 'Chocolate, especiarias, creme fresco', '✨', TRUE, 'Exclusivo', 'Ativo', NULL),
+('Torta de Morango', 'Torta artesanal com morangos frescos.', 'tortas', 79.90, 7, 'Massa doce, creme, morango, chantilly', '🍓', FALSE, NULL, 'Ativo', NULL);
+INSERT INTO despesas (usuario_id, descricao, categoria, tipo, valor, data_despesa, status) VALUES
+(1, 'Compra de chocolate belga', 'ingredientes', 'ingredientes', 150.00, CURDATE(), 'Pago'),
+(1, 'Caixas premium para doces', 'embalagens', 'embalagens', 80.00, CURDATE(), 'Pago');
