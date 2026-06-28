@@ -1,29 +1,23 @@
 {
-  "name": "aura-angular",
+  "name": "trabalhodswapi",
   "version": "1.0.0",
+  "description": "",
+  "main": "routes.js",
   "scripts": {
-    "ng": "ng",
-    "start": "ng serve --open",
-    "build": "ng build"
+    "start": "npx nodemon src/api.js"
   },
-  "private": true,
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
   "dependencies": {
-    "@angular/animations": "^20.3.0",
-    "@angular/common": "^20.3.0",
-    "@angular/compiler": "^20.3.0",
-    "@angular/core": "^20.3.0",
-    "@angular/forms": "^20.3.0",
-    "@angular/platform-browser": "^20.3.0",
-    "@angular/router": "^20.3.0",
-    "rxjs": "~7.8.0",
-    "tslib": "^2.8.0",
-    "zone.js": "~0.15.0"
-  },
-  "devDependencies": {
-    "@angular-devkit/build-angular": "^20.3.26",
-    "@angular/build": "^20.3.0",
-    "@angular/cli": "^20.3.26",
-    "@angular/compiler-cli": "^20.3.0",
-    "typescript": "~5.9.0"
+    "cors": "^2.8.6",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "jsonwebtoken": "^9.0.3",
+    "md5": "^2.3.0",
+    "multer": "^2.1.1",
+    "mysql2": "^3.22.3",
+    "nodemon": "^3.1.14"
   }
 }
